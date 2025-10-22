@@ -1,0 +1,300 @@
+/* Color Palette */
+:root {
+    --color-primary: #FF5733; /* Vibrant Orange/Red */
+    --color-secondary: #00bcd4; /* Cyan/Blue Accent */
+    --color-background-main: #f4f7f6; /* Light Grey Background */
+    --color-background-card: #ffffff; /* White Card Background */
+    --color-text-main: #333333; /* Dark Grey Text */
+    --color-text-light: #6c757d; /* Lighter Grey Text */
+    --color-success: #28a745;
+    --color-error: #dc3545;
+    --color-info: #007bff;
+    --color-shadow: rgba(0, 0, 0, 0.08);
+    --color-border: #e0e0e0;
+}
+
+/* Global Styles & Typography */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--color-background-main);
+    color: var(--color-text-main);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--color-secondary);
+}
+
+/* Header & Footer */
+.header {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+    color: white;
+    padding: 1.5rem 0;
+    box-shadow: 0 4px 6px var(--color-shadow);
+}
+
+.logo {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.footer {
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: auto; /* Pushes footer to the bottom */
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+}
+
+/* Layout */
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 992px) {
+    .container {
+        grid-template-columns: 1fr 1.5fr; /* Input section is smaller, results section is larger */
+    }
+}
+
+/* Card Styling */
+.card {
+    background-color: var(--color-background-card);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px var(--color-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.card-description {
+    color: var(--color-text-light);
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+/* Input Styles */
+.input-textarea {
+    width: 100%;
+    min-height: 250px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-textarea:focus {
+    border-color: var(--color-secondary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
+}
+
+/* Button Styling */
+.button-primary {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 50px; /* Pill shape */
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button-primary:hover {
+    background-color: #e64e2d; /* Darker hover */
+}
+
+.button-primary:active {
+    transform: scale(0.99);
+}
+
+.button-primary:disabled {
+    background-color: var(--color-text-light);
+    cursor: not-allowed;
+}
+
+.icon-left {
+    margin-right: 0.5rem;
+}
+
+/* Status Messages */
+.status-message {
+    padding: 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.status-info {
+    background-color: rgba(0, 123, 255, 0.1);
+    color: var(--color-info);
+    border: 1px solid var(--color-info);
+}
+
+.status-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: var(--color-success);
+    border: 1px solid var(--color-success);
+}
+
+.status-error {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--color-error);
+    border: 1px solid var(--color-error);
+}
+
+/* Results List */
+.results-container {
+    min-height: 100px;
+    /* Optional: Add a scrollbar if the list gets too long */
+    max-height: 400px; 
+    overflow-y: auto;
+    padding-right: 5px; 
+}
+
+.results-list {
+    list-style: none;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px dashed var(--color-border);
+    opacity: 0; /* Used for entrance animation */
+    animation: fadeIn 0.5s forwards;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.result-link-wrapper {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.result-icon {
+    font-size: 1.2rem;
+    margin-right: 0.75rem;
+}
+
+.icon-success { color: var(--color-success); }
+.icon-error { color: var(--color-error); }
+
+.result-link {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 90%;
+}
+
+.result-error-msg {
+    color: var(--color-error);
+    font-style: italic;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+}
+
+.result-status-tag {
+    padding: 0.3rem 0.7rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 75px;
+    text-align: center;
+    margin-left: 1rem;
+}
+
+.tag-success {
+    background-color: var(--color-success);
+    color: white;
+}
+
+.tag-error {
+    background-color: var(--color-error);
+    color: white;
+}
+
+.button-download-mini {
+    background-color: var(--color-secondary);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.button-download-mini:hover {
+    background-color: #008c9e;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

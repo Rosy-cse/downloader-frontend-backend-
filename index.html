@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ BatchDownloader</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">⚡ BatchDownloader</div>
+    </header>
+
+    <main class="container">
+        <section class="card input-section">
+            <h2 class="card-title">Batch Download Links</h2>
+            <p class="card-description">Paste one YouTube/Video link per line (max 15).</p>
+            <textarea id="links" class="input-textarea" placeholder="Paste your video links here..."></textarea>
+            <button id="downloadButton" class="button-primary">
+                <i class="fas fa-download icon-left"></i> Start Download
+            </button>
+        </section>
+
+        <section class="card results-section">
+            <h2 class="card-title">Download Status</h2>
+            <div id="status-message" class="status-message">Ready to process links.</div>
+            <div class="results-container">
+                <ul id="resultsList" class="results-list">
+                    <li class="result-item result-template">
+                        <div class="result-link-wrapper">
+                            <span class="result-icon"></span>
+                            <a href="#" class="result-link" target="_blank"></a>
+                        </div>
+                        <span class="result-status-tag"></span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 BatchDownloader | Powered by yt-dlp</p>
+    </footer>
+
+    <script>
+        const downloadButton = document.getElementById('downloadButton');
+        const linksTextarea = document.getElementById('links');
+        const resultsList = document.getElementById('resultsList');
+        const statusMessage = document.getElementById('status-message');
+        const resultTemplate = document.querySelector('.result-template');
+
+        // Clear the template from the live list
+        resultsList.innerHTML = '';
+
+        downloadButton.addEventListener('click', async () => {
+            const links = linksTextarea.value
+                .split('\n')
+                .map(link => link.trim())
+                .filter(link => link.length > 0);
+
+            if (links.length === 0) {
+                statusMessage.className = 'status-message status-error';
+                statusMessage.textContent = 'Please paste at least one link.';
+                return;
+            }
+
+            if (links.length > 15) {
+                statusMessage.className = 'status-message status-error';
+                statusMessage.textContent = 'Maximum 15 links allowed at once.';
+                return;
+            }
+
+            // UI feedback: Disable button and show loading state
+            downloadButton.disabled = true;
+            downloadButton.innerHTML = '<i class="fas fa-spinner fa-spin icon-left"></i> Processing...';
+            statusMessage.className = 'status-message status-info';
+            statusMessage.textContent = `Processing ${links.length} link(s). Please wait...`;
+            resultsList.innerHTML = ''; // Clear previous results
+
+            try {
+                const response = await fetch('/api/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ links })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Server returned an error.');
+                }
+
+                const data = await response.json();
+                
+                // Final status message
+                statusMessage.className = 'status-message status-success';
+                statusMessage.textContent = 'Download process complete!';
+
+                data.results.forEach(result => {
+                    const item = resultTemplate.cloneNode(true);
+                    item.classList.remove('result-template');
+                    
+                    const linkElement = item.querySelector('.result-link');
+                    const statusTag = item.querySelector('.result-status-tag');
+                    const iconElement = item.querySelector('.result-icon');
+
+                    linkElement.textContent = result.link.length > 70 
+                        ? result.link.substring(0, 67) + '...' 
+                        : result.link;
+                    linkElement.href = result.link;
+
+                    if (result.ok && result.file) {
+                        // SUCCESS
+                        statusTag.textContent = 'Complete';
+                        statusTag.classList.add('tag-success');
+                        iconElement.className = 'result-icon fas fa-check-circle icon-success';
+                        
+                        // Create a separate download link for the file
+                        const fileLink = document.createElement('a');
+                        fileLink.href = result.file;
+                        fileLink.textContent = 'Download File';
+                        fileLink.classList.add('button-download-mini');
+                        
+                        // Replace the original link with the actual download link in the UI
+                        item.querySelector('.result-link-wrapper').appendChild(fileLink);
+                        linkElement.remove(); // Remove the original link display
+                        
+                    } else {
+                        // ERROR
+                        statusTag.textContent = 'Failed';
+                        statusTag.classList.add('tag-error');
+                        iconElement.className = 'result-icon fas fa-times-circle icon-error';
+                        
+                        // Display the error message
+                        const errorMsg = document.createElement('span');
+                        errorMsg.textContent = result.error || result.message || 'Unknown Error';
+                        errorMsg.classList.add('result-error-msg');
+                        item.querySelector('.result-link-wrapper').appendChild(errorMsg);
+                        linkElement.remove();
+                    }
+
+                    resultsList.appendChild(item);
+                });
+
+            } catch (error) {
+                console.error('Download API Error:', error);
+                statusMessage.className = 'status-message status-error';
+                statusMessage.textContent = `Error: ${error.message}`;
+            } finally {
+                // UI feedback: Re-enable button
+                downloadButton.disabled = false;
+                downloadButton.innerHTML = '<i class="fas fa-download icon-left"></i> Start Download';
+            }
+        });
+    </script>
+</body>
+</html>
